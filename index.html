@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Queue Simulation</title>
+    <link rel="stylesheet" href="/static/style.css" />
+</head>
+
+<body class="SimulationBody">
+    <h1>Queue Simulation</h1>
+    <form id="form">
+        <section id="simulationForm">
+            <div>
+                <label for="RANDOM_SEED">RANDOM_SEED:</label> <br />
+                <input type="number" id="RANDOM_SEED" name="RANDOM_SEED" value="" />
+            </div>
+            <div>
+                <label for="NEW_CUSTOMERS">NEW_CUSTOMERS:</label><br />
+                <input type="number" id="NEW_CUSTOMERS" name="NEW_CUSTOMERS" value="" />
+            </div>
+            <div>
+                <label for="INTER_ARRIVAL_TIME">INTER_ARRIVAL_TIME:</label><br />
+                <input type="number" id="INTER_ARRIVAL_TIME" name="INTER_ARRIVAL_TIME" value="" />
+            </div>
+            <div>
+                <label for="SERVICE_TIME">SERVICE_TIME:</label><br />
+                <input type="number" id="SERVICE_TIME" name="SERVICE_TIME" value="" />
+            </div>
+            <div>
+                <label for="NUM_SERVERS">NUM_SERVERS:</label><br />
+                <input type="number" id="NUM_SERVERS" name="NUM_SERVERS" value="" />
+            </div>
+        </section>
+        <button id="simulateBtn" type="button" onclick="simulate()">
+        Simulate
+      </button>
+    </form>
+    <h2>Results</h2>
+    <p id="results"></p>
+    <h2>Graph</h2>
+    <img id="simulationGraph" src="/graph" alt="Simulation Graph" />
+
+    <script>
+        function simulate() {
+            const formData = new FormData(document.getElementById("form"));
+            const data = {};
+            formData.forEach((value, key) => {
+                data[key] = Number(value);
+            });
+
+            fetch("/simulate", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                    },
+                    body: JSON.stringify(data),
+                })
+                .then((response) => response.json())
+                .then((data) => {
+                    document.getElementById(
+                        "results"
+                    ).innerText = `Average Wait Time: ${data.average_wait_time.toFixed(
+              2
+            )} minutes`;
+                    document.getElementById(
+                        "simulationGraph"
+                    ).src = `/graph?${new Date().getTime()}`;
+                });
+        }
+    </script>
+</body>
+
+</html>
