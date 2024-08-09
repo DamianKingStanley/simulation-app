@@ -1,50 +1,150 @@
+/* General Styles */
+
 .SimulationBody {
-    padding: 20px 50px;
+    padding: 20px 80px;
+    font-family: "Poppins", sans-serif;
+    background-color: #f0f2f5;
+    color: #333;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh;
 }
 
 .SimulationBody h1 {
-    background-color: green;
+    font-family: "Poppins", sans-serif;
+    background-color: #007bff;
+    /* Professional blue */
     color: white;
     text-align: center;
-    padding: 30px;
+    padding: 20px;
+    border-radius: 8px;
+    margin-bottom: 30px;
 }
 
+
+/* Form Styles */
+
 #simulationForm {
-    padding: 10px;
+    padding: 80px 50px;
     display: flex;
-    flex-direction: row;
     flex-wrap: wrap;
+    justify-content: center;
     gap: 20px;
+    max-width: 1000px;
+    width: 100%;
+    background-color: white;
+    border-radius: 10px;
+}
+
+#simulationForm div {
+    flex: 1 1 200px;
 }
 
 #simulationForm label {
-    font-size: 20px;
-    color: green;
+    display: block;
+    font-weight: bold;
+    margin-bottom: 5px;
 }
 
 #simulationForm input {
-    width: 200px;
-    height: 40px;
-    font-size: 15px;
-    padding-left: 5px;
+    width: 90%;
+    height: 30px;
+    font-size: 1rem;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    transition: border-color 0.3s;
 }
+
+#simulationForm input:focus {
+    border-color: #007bff;
+    outline: none;
+}
+
+
+/* Button Styles */
 
 #simulateBtn {
     border: none;
-    background-color: green;
+    background-color: #007bff;
+    /* Professional blue */
     color: white;
-    width: 300px;
+    width: 100%;
+    max-width: 320px;
     height: 50px;
     text-align: center;
-    font-size: 20px;
-    border-radius: 10px;
-    margin-top: 40px;
+    font-size: 18px;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    margin-top: 20px;
 }
 
-#simulateBtn:hover,
-#simulateBtn:after {
-    background-color: rgb(5, 169, 5);
+#simulateBtn:hover {
+    background-color: #0056b3;
 }
+
+
+/* Table Styles */
+
+#customerDetails {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 20px 0;
+    max-width: 800px;
+}
+
+#customerDetails th,
+#customerDetails td {
+    border: 1px solid #ddd;
+    padding: 12px 15px;
+}
+
+#customerDetails th {
+    background-color: #007bff;
+    color: #fff;
+    text-align: left;
+}
+
+#customerDetails tr:nth-child(even) {
+    background-color: #f9f9f9;
+}
+
+#customerDetails tr:hover {
+    background-color: #ddd;
+}
+
+
+/* Loader Styles */
+
+#loader {
+    border: 8px solid #f3f3f3;
+    border-radius: 50%;
+    border-top: 8px solid #007bff;
+    width: 50px;
+    height: 50px;
+    animation: spin 1s linear infinite;
+    margin: 20px auto;
+}
+
+.hidden {
+    display: none;
+}
+
+@keyframes spin {
+    0% {
+        transform: rotate(0deg);
+    }
+    100% {
+        transform: rotate(360deg);
+    }
+}
+
+
+/* Responsive Design */
 
 @media screen and (max-width: 900px) {
     .SimulationBody {
@@ -52,5 +152,8 @@
     }
     #simulationGraph {
         width: 300px;
+    }
+    #simulateBtn {
+        margin-left: 0;
     }
 }

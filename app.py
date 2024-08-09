@@ -2,8 +2,6 @@ import simpy
 import random
 import statistics
 import matplotlib.pyplot as plt
-import io
-import base64
 from flask import Flask, request, jsonify, send_from_directory, send_file
 
 app = Flask(__name__)
@@ -13,8 +11,7 @@ class Bookshop:
         self.env = env
         self.server = simpy.Resource(env, num_servers)
         self.service_time = service_time
-        self.wait_times = []
-        self.service_times = []
+        self.customers = []
 
     def serve_customer(self, customer):
         """Serve a customer."""
@@ -25,18 +22,24 @@ class Bookshop:
             start_service = self.env.now
             yield self.env.timeout(random.expovariate(1.0 / self.service_time))
             end_service = self.env.now
+
             waiting_time = start_service - arrival_time
             service_time = end_service - start_service
-            self.wait_times.append(waiting_time)
-            self.service_times.append(service_time)
+
+            self.customers.append({
+                'customer': customer,
+                'arrival_time': arrival_time,
+                'start_service': start_service,
+                'end_service': end_service,
+                'waiting_time': waiting_time,
+                'service_time': service_time
+            })
 
 def setup(env, num_customers, inter_arrival_time, bookshop):
     """Generate new customers at random intervals."""
     for i in range(num_customers):
         yield env.timeout(random.expovariate(1.0 / inter_arrival_time))
         env.process(bookshop.serve_customer(f'Customer {i+1}'))
-
-
 
 @app.route('/simulate', methods=['POST'])
 def simulate():
@@ -53,12 +56,14 @@ def simulate():
     env.process(setup(env, NEW_CUSTOMERS, INTER_ARRIVAL_TIME, bookshop))
     env.run()
 
-    average_wait_time = statistics.mean(bookshop.wait_times) if bookshop.wait_times else 0
+    average_wait_time = statistics.mean([customer['waiting_time'] for customer in bookshop.customers]) if bookshop.customers else 0
 
     # Generate and save the graph
     plt.figure(figsize=(10, 6))
-    plt.plot(bookshop.wait_times, label='Wait Time', marker='o')
-    plt.plot(bookshop.service_times, label='Service Time', marker='x')
+    wait_times = [customer['waiting_time'] for customer in bookshop.customers]
+    service_times = [customer['service_time'] for customer in bookshop.customers]
+    plt.plot(wait_times, label='Wait Time', marker='o')
+    plt.plot(service_times, label='Service Time', marker='x')
     plt.xlabel('Customer')
     plt.ylabel('Time (minutes)')
     plt.title('Customer Wait and Service Times')
@@ -69,8 +74,7 @@ def simulate():
 
     return jsonify({
         'average_wait_time': average_wait_time,
-        'wait_times': bookshop.wait_times,
-        'service_times': bookshop.service_times
+        'customers': bookshop.customers
     })
 
 @app.route('/graph')

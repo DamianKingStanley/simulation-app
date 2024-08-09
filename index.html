@@ -6,6 +6,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Queue Simulation</title>
     <link rel="stylesheet" href="/static/style.css" />
+    <link rel="stylesheet" href="/static/table.css" />
+    <link rel="stylesheet" href="/static/loader.css" />
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet" />
 </head>
 
 <body class="SimulationBody">
@@ -37,8 +40,23 @@
         Simulate
       </button>
     </form>
+    <div id="loader" class="hidden"></div>
     <h2>Results</h2>
     <p id="results"></p>
+    <h2 class="hidden" id="customerDetailsHeader">Customer Details</h2>
+    <table id="customerDetails" class="hidden">
+        <thead>
+            <tr>
+                <th>Customer</th>
+                <th>Arrival Time</th>
+                <th>Start Service</th>
+                <th>End Service</th>
+                <th>Waiting Time</th>
+                <th>Service Time</th>
+            </tr>
+        </thead>
+        <tbody></tbody>
+    </table>
     <h2>Graph</h2>
     <img id="simulationGraph" src="/graph" alt="Simulation Graph" />
 
@@ -49,6 +67,9 @@
             formData.forEach((value, key) => {
                 data[key] = Number(value);
             });
+
+            // Show the loader
+            document.getElementById("loader").classList.remove("hidden");
 
             fetch("/simulate", {
                     method: "POST",
@@ -64,9 +85,36 @@
                     ).innerText = `Average Wait Time: ${data.average_wait_time.toFixed(
               2
             )} minutes`;
+
+                    const customerDetails = document
+                        .getElementById("customerDetails")
+                        .getElementsByTagName("tbody")[0];
+                    customerDetails.innerHTML = "";
+                    data.customers.forEach((customer) => {
+                        const row = customerDetails.insertRow();
+                        row.insertCell(0).innerText = customer.customer;
+                        row.insertCell(1).innerText = customer.arrival_time.toFixed(2);
+                        row.insertCell(2).innerText = customer.start_service.toFixed(2);
+                        row.insertCell(3).innerText = customer.end_service.toFixed(2);
+                        row.insertCell(4).innerText = customer.waiting_time.toFixed(2);
+                        row.insertCell(5).innerText = customer.service_time.toFixed(2);
+                    });
+
                     document.getElementById(
                         "simulationGraph"
                     ).src = `/graph?${new Date().getTime()}`;
+
+                    // Make the table and header visible
+                    document
+                        .getElementById("customerDetails")
+                        .classList.remove("hidden");
+                    document
+                        .getElementById("customerDetailsHeader")
+                        .classList.remove("hidden");
+                })
+                .finally(() => {
+                    // Hide the loader
+                    document.getElementById("loader").classList.add("hidden");
                 });
         }
     </script>
